@@ -1,0 +1,8 @@
+numbers = input().split()
+numbers = [int(num) for num in numbers]
+
+for i in numbers:
+    if i%2 != 0:
+        print("odd")
+    else:
+        print("even")
