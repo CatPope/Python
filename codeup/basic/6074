@@ -1,0 +1,4 @@
+u = ord(input())
+
+for s in range(ord('a'), u+1):
+    print(chr(s), end=' ')
