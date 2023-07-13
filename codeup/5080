@@ -1,0 +1,17 @@
+u = 100
+k = 100
+
+n = int(input())
+
+for i in range(1, n+1):
+    uminus, kminus = input().split()
+    uminus = int(uminus)
+    kminus = int(kminus)
+    
+    if kminus > uminus:
+        u -= kminus
+    elif uminus > kminus:
+        k -= uminus
+        
+print(u)
+print(k)
