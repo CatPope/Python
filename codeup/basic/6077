@@ -1,0 +1,7 @@
+n = int(input())
+add = 0
+
+for even in range(n+1):
+    if even%2 == 0:
+        add += even
+print(add)
