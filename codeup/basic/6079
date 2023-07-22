@@ -1,0 +1,8 @@
+num = int(input())
+sum = 0
+
+for cnt in range(num):
+    sum += cnt
+    if sum >= num:
+        break
+print(cnt)
