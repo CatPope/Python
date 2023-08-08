@@ -1,0 +1,9 @@
+total = int(input())
+num = input().split()
+num = [int(n) for n in num]
+count = [0] * 23
+
+for i in range(total):
+    count[num[i]-1] += 1
+for result in count:
+    print(result, end=' ')
