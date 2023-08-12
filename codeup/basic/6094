@@ -1,0 +1,9 @@
+n = int(input())
+k = input().split()
+min = int(k[0])
+
+for i in range(n):
+    num = int(k[i])
+    if num <= min:
+        min = num
+print(min)
