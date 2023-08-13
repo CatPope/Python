@@ -1,0 +1,15 @@
+n = int(input())
+w = []
+for i in range(n):
+    w.append(input().split())
+    
+for i in range(19):
+    for j in range(18):
+        if [str(i+1), str(j+1)] in w:
+            print(1, end=' ')
+        else:
+            print(0, end=' ')
+    if [str(i+1), str(j+2)] in w:
+        print(1)
+    else:
+        print(0)
