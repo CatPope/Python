@@ -1,0 +1,10 @@
+bracats = input()
+start = 0
+total = 0
+
+for i in range(len(bracats)-1):
+    if "((" == bracats[i:i+2]:
+        start+=1
+    elif "))" == bracats[i:i+2]:
+        total+=start
+print(total)
