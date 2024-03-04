@@ -1,6 +1,5 @@
 import tkinter as tk
-from tkinter import ttk
-from tkinter import messagebox
+from tkinter import ttk, messagebox
 import os
 from planning_chart import PlanningChart
 
@@ -8,7 +7,7 @@ from planning_chart import PlanningChart
 class LoadPlans:
     def __init__(self, master):
         self.master = master
-        self.master.title("목표 선택")
+        self.master.title("반드시 성공시키자!")
 
         self.goals_list = self.load_goals()
 
@@ -73,7 +72,7 @@ class LoadPlans:
             self.opened_plans.append(goal)
             window_planning = tk.Toplevel(self.master)
             # root.iconify() #화면 최소화
-            app_planning = PlanningChart(window_planning, goal)
+            app_planning = PlanningChart(window_planning, goal, self.opened_plans)
 
 if __name__ == "__main__":
     root = tk.Tk()

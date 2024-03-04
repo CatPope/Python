@@ -1,16 +1,35 @@
 import tkinter as tk
+from tkinter import filedialog
 
-def on_enter(event):
-    entry_text = entry.get()
-    print(entry_text)
-    print(f"Enter key pressed. Entered text: {entry_text}")
+class App:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("File Contents to Listbox")
 
-root = tk.Tk()
+        self.listbox = tk.Listbox(root, width=50, height=10)
+        self.listbox.pack()
 
-entry = tk.Entry(root)
-entry.pack()
+        load_button = tk.Button(root, text="Load File", command=self.load_file)
+        load_button.pack()
 
-# Entry 위젯에 엔터 키에 대한 이벤트 바인딩
-entry.bind('<Return>', on_enter)
+    def load_file(self):
+        file_path = filedialog.askopenfilename(title="Select a file", filetypes=[("Text files", "*.txt")])
+        
+        if file_path:
+            try:
+                with open(file_path, 'r') as file:
+                    content = file.readlines()
+                
+                # Clear existing items in the listbox
+                self.listbox.delete(0, tk.END)
 
-root.mainloop()
+                # Insert lines from the file into the listbox
+                for line in content:
+                    self.listbox.insert(tk.END, line.strip())
+            except Exception as e:
+                tk.messagebox.showerror("Error", f"Error loading file: {str(e)}")
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = App(root)
+    root.mainloop()
