@@ -8,7 +8,6 @@ class PlanningChart:
         self.goal = goal
         self.opened_plans = opened_plans
         self.finished_plans = []
-        # self.load_file()
 
         self.master = master
         self.master.title(goal)
@@ -40,6 +39,7 @@ class PlanningChart:
         self.chacked_plan_button.pack()
 
         self.plan_listbox = tk.Listbox(master)
+        self.load_file()
         self.plan_listbox.pack()
 
         self.save_button = tk.Button(master, text="저장 (Ctrl + S)", command=self.save_plans)
@@ -48,6 +48,9 @@ class PlanningChart:
         self.master.bind("<Control-s>", lambda event: self.save_plans())
         self.master.bind("<Delete>", lambda event: self.delete_plan())
         self.plan_entry.bind("<Return>", self.add_plan)
+
+        
+        self.update_progress()
 
     def add_plan(self, event=None):
         plan = self.plan_entry.get()
@@ -101,7 +104,7 @@ class PlanningChart:
 
     def save_plans(self):
         if self.goal:
-            file_path = os.path.join("goals", f"{self.goal}.txt")
+            file_path = os.path.join("목표", f"{self.goal}.txt")
 
             with open(file_path, 'w') as file:
                 for i in range(self.plan_listbox.size()):
@@ -113,12 +116,10 @@ class PlanningChart:
         self.opened_plans.remove(self.goal)
         self.master.destroy()
 
-    # def load_file(self):
-    #     file_path = os.path.join("goals", f"{self.goal}.txt")
-    #     print("작동")
-    #     if file_path:
-    #         with open(file_path, 'r') as file:
-    #             content = file.readlines()
-    #             print(content)
-    #         for line in content:
-    #             self.plan_listbox.insert(tk.END, line.strip())
+    def load_file(self):
+        file_path = os.path.join("목표", f"{self.goal}.txt")
+        if file_path:
+            with open(file_path, 'r') as file:
+                content = file.readlines()
+            for line in content:
+                self.plan_listbox.insert(tk.END, line.strip())
