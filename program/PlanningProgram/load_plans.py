@@ -26,6 +26,9 @@ class LoadPlans:
         self.select_button = tk.Button(master, text="불러오기", command=self.select_goal)
         self.select_button.pack()
 
+        self.delete_file_button = tk.Button(master, text="파일 삭제", command=self.delete_selected_file)
+        self.delete_file_button.pack()
+
     def goals_path(self):
         current_dir = os.path.dirname(os.path.abspath(__file__))
         goals_dir = os.path.join(current_dir, '목표')
@@ -50,6 +53,8 @@ class LoadPlans:
         selected_goal_value = self.goals_combobox.get()
         if selected_goal_value == "목표 선택":
             messagebox.showwarning("경고", "목표를 선택하세요")
+        elif selected_goal_value not in self.goals_list:
+            messagebox.showwarning("경고", "존재하지 않는 목표입니다.")
         else:
             self.open_plans(selected_goal_value)
 
@@ -62,8 +67,25 @@ class LoadPlans:
         for goal_file in goals_file_list:
             sp_file = goal_file.split('.')
             goals_list.append(sp_file[0])
-
         return goals_list
+
+
+    def delete_selected_file(self):
+        selected_goal_value = self.goals_combobox.get()
+        if selected_goal_value == "목표 선택":
+            messagebox.showwarning("경고", "목표를 선택하세요")
+        else:
+            try:
+                file_path = os.path.join(self.goals_path(), f"{selected_goal_value}.txt")
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+                    messagebox.showinfo("파일 삭제 완료", "파일이 성공적으로 삭제되었습니다.")
+                    self.goals_list.remove(selected_goal_value)
+                    self.goals_combobox.config(values=self.goals_list)
+                else:
+                    messagebox.showwarning("경고", "삭제할 파일이 존재하지 않습니다.")
+            except Exception as e:
+                messagebox.showerror("오류", f"파일 삭제 중 오류가 발생했습니다: {e}")
 
     def open_plans(self, goal):
         if goal in self.opened_plans:
