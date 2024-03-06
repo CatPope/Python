@@ -8,7 +8,6 @@ class PlanningChart:
         self.goal = goal
         self.opened_plans = opened_plans
         self.finished_plans = []
-        self.undo_stack = []
 
         self.master = master
         self.master.title(goal)
@@ -48,7 +47,7 @@ class PlanningChart:
         self.save_button.pack()
 
         self.master.bind("<Control-s>", lambda event: self.save_plans())
-        self.master.bind("<Control-z>", lambda event: self.undo())
+        self.master.bind("<Control-w>", lambda event: self.close_plans)
         self.master.bind("<Delete>", lambda event: self.delete_plan())
         self.plan_entry.bind("<Return>", self.add_plan)
 
@@ -61,7 +60,6 @@ class PlanningChart:
             self.plan_listbox.insert(0, plan)
             self.plan_entry.delete(0, tk.END)
             self.update_progress()
-            self.update_undo_stack()
         else:
             messagebox.showwarning("경고", "계획을 입력하세요.")
 
@@ -74,7 +72,6 @@ class PlanningChart:
                     self.plan_listbox.delete(index)
                     self.plan_listbox.insert(index, modified_plan)
                 self.update_progress()
-                self.update_undo_stack()
         else:
             messagebox.showwarning("경고", "수정할 계획을 선택하세요.")
 
@@ -86,7 +83,6 @@ class PlanningChart:
                 for index in reversed(selected_indices):
                     self.plan_listbox.delete(index)
                 self.update_progress()
-                self.update_undo_stack()
         else:
             messagebox.showwarning("경고", "삭제할 계획을 선택하세요.")
 
@@ -98,28 +94,11 @@ class PlanningChart:
                 if item_bg_color=='white' or item_bg_color=='':
                     self.plan_listbox.itemconfig(index, {'bg': 'light green'})
                     self.update_progress()
-                    self.update_undo_stack()
                 else:
                     self.plan_listbox.itemconfig(index, {'bg': 'white'})
                     self.update_progress()
-                    self.update_undo_stack()
         else:
             messagebox.showwarning("경고", "완료할 계획을 선택하세요.")
-
-    def undo(self):
-        # Ctrl + Z를 누를 때 스택에서 이전 상태를 꺼내와서 적용
-        print("undo")
-        if self.undo_stack:
-            previous_state = self.undo_stack.pop()
-            self.plan_listbox.delete(0, tk.END)
-            for item in previous_state:
-                self.plan_listbox.insert(tk.END, item)
-            self.update_progress()
-
-    def update_undo_stack(self):
-        # 변경된 상태를 스택에 저장
-        current_state = [self.plan_listbox.get(i) for i in range(self.plan_listbox.size())]
-        self.undo_stack.append(current_state)
 
     def update_progress(self):
         total_plans = self.plan_listbox.size()
@@ -139,8 +118,11 @@ class PlanningChart:
             messagebox.showinfo("저장 완료", "계획이 성공적으로 저장되었습니다.")
 
     def close_plans(self):
-        self.opened_plans.remove(self.goal)
-        self.master.destroy()
+        confirm = messagebox.askokcancel("저장", "저장 하시겠습니까?")
+        if confirm:
+            self.save_plans()
+            self.opened_plans.remove(self.goal)
+            self.master.destroy()
 
     def load_file(self):
         file_path = os.path.join("목표", f"{self.goal}.txt")
