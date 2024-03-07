@@ -35,8 +35,8 @@ class PlanningChart:
         self.delete_plan_button = tk.Button(master, text="삭제", command=self.delete_plan)
         self.delete_plan_button.pack()
 
-        self.chacked_plan_button = tk.Button(master, text="완료", command=self.chacked_plan)
-        self.chacked_plan_button.pack()
+        self.check_plan_button = tk.Button(master, text="완료", command=self.check_plan)
+        self.check_plan_button.pack()
 
         self.plan_listbox = tk.Listbox(master)
         self.plan_listbox.config(selectmode="extended")
@@ -61,19 +61,22 @@ class PlanningChart:
             self.plan_entry.delete(0, tk.END)
             self.update_progress()
         else:
-            messagebox.showwarning("경고", "계획을 입력하세요.")
+            messagebox.showwarning("경고", "계획을 입력하세요")
 
     def modify_plan(self):
         selected_indices = self.plan_listbox.curselection()
-        if selected_indices:
+        check = self.checked_or_no()
+        if len(selected_indices) == 1:
             modified_plan = simpledialog.askstring("계획 수정", "수정된 계획을 입력하세요:", parent=self.master)
+            if check == 1:
+                modified_plan = modified_plan+'`'
+                print(modified_plan)
             if modified_plan:
-                for index in reversed(selected_indices):
-                    self.plan_listbox.delete(index)
-                    self.plan_listbox.insert(index, modified_plan)
+                self.plan_listbox.delete(index)
+                self.plan_listbox.insert(index, modified_plan)
                 self.update_progress()
         else:
-            messagebox.showwarning("경고", "수정할 계획을 선택하세요.")
+            messagebox.showwarning("경고", "계획을 한개만 선택하세요")
 
     def delete_plan(self):
         selected_indices = self.plan_listbox.curselection()
@@ -84,21 +87,29 @@ class PlanningChart:
                     self.plan_listbox.delete(index)
                 self.update_progress()
         else:
-            messagebox.showwarning("경고", "삭제할 계획을 선택하세요.")
+            messagebox.showwarning("경고", "계획을 선택하세요")
 
-    def chacked_plan(self):
-        selected_indices = self.plan_listbox.curselection()
+    def checked_or_no(self, selected_indices):
+        checked_list = []
         if selected_indices:
             for index in reversed(selected_indices):
-                item_bg_color = self.plan_listbox.itemcget(index, 'bg')
-                if item_bg_color=='white' or item_bg_color=='':
-                    self.plan_listbox.itemconfig(index, {'bg': 'light green'})
-                    self.update_progress()
-                else:
-                    self.plan_listbox.itemconfig(index, {'bg': 'white'})
-                    self.update_progress()
+                plan_text = self.plan_listbox.get(index)
+                checked = plan_text[-2]
+                checked_list.append((index, checked))
+            return checked_list
         else:
-            messagebox.showwarning("경고", "완료할 계획을 선택하세요.")
+            messagebox.showwarning("경고", "계획을 선택하세요")
+            return []
+
+
+    def check_plan(self):
+        selected_indices = self.plan_listbox.curselection()
+        for index, checked in self.checked_or_no(selected_indices):
+            if checked == '`':
+                self.plan_listbox.itemconfig(index, {'bg': 'white'})
+            else:
+                self.plan_listbox.itemconfig(index, {'bg': 'light green'})
+        self.update_progress()
 
     def update_progress(self):
         total_plans = self.plan_listbox.size()
@@ -115,7 +126,7 @@ class PlanningChart:
                 for i in range(self.plan_listbox.size()):
                     file.write(f"{self.plan_listbox.get(i)}\n")
 
-            messagebox.showinfo("저장 완료", "계획이 성공적으로 저장되었습니다.")
+            messagebox.showinfo("저장 완료", "계획이 성공적으로 저장되었습니다")
 
     def close_plans(self):
         confirm = messagebox.askokcancel("저장", "저장 하시겠습니까?")
@@ -130,4 +141,4 @@ class PlanningChart:
             with open(file_path, 'r') as file:
                 content = file.readlines()
             for line in content:
-                self.plan_listbox.insert(tk.END, line.strip(" $"))
+                self.plan_listbox.insert(tk.END, line.strip(" `"))
