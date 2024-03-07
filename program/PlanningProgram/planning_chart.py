@@ -64,17 +64,18 @@ class PlanningChart:
             messagebox.showwarning("경고", "계획을 입력하세요")
 
     def modify_plan(self):
-        selected_indices = self.plan_listbox.curselection()
-        check = self.checked_or_no()
-        if len(selected_indices) == 1:
+        checked_list = self.checked_or_no()
+        print(checked_list)
+        if len(checked_list) == 1:
+            index, checked = checked_list[0]
             modified_plan = simpledialog.askstring("계획 수정", "수정된 계획을 입력하세요:", parent=self.master)
-            if check == 1:
-                modified_plan = modified_plan+'`'
+            if checked == '$$':
+                modified_plan = modified_plan+'$$'
                 print(modified_plan)
             if modified_plan:
                 self.plan_listbox.delete(index)
                 self.plan_listbox.insert(index, modified_plan)
-                self.update_progress()
+                self.check_plan()
         else:
             messagebox.showwarning("경고", "계획을 한개만 선택하세요")
 
@@ -89,7 +90,8 @@ class PlanningChart:
         else:
             messagebox.showwarning("경고", "계획을 선택하세요")
 
-    def checked_or_no(self, selected_indices):
+    def checked_or_no(self):
+        selected_indices = self.plan_listbox.curselection()
         checked_list = []
         if selected_indices:
             for index in reversed(selected_indices):
@@ -103,9 +105,8 @@ class PlanningChart:
 
 
     def check_plan(self):
-        selected_indices = self.plan_listbox.curselection()
-        for index, checked in self.checked_or_no(selected_indices):
-            if checked == '`':
+        for index, checked in self.checked_or_no():
+            if checked == '$$':
                 self.plan_listbox.itemconfig(index, {'bg': 'white'})
             else:
                 self.plan_listbox.itemconfig(index, {'bg': 'light green'})
@@ -141,4 +142,4 @@ class PlanningChart:
             with open(file_path, 'r') as file:
                 content = file.readlines()
             for line in content:
-                self.plan_listbox.insert(tk.END, line.strip(" `"))
+                self.plan_listbox.insert(tk.END, line.strip(" $$"))
