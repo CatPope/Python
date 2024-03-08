@@ -65,13 +65,11 @@ class PlanningChart:
 
     def modify_plan(self):
         checked_list = self.checked_or_no()
-        print(checked_list)
         if len(checked_list) == 1:
             index, checked = checked_list[0]
             modified_plan = simpledialog.askstring("계획 수정", "수정된 계획을 입력하세요:", parent=self.master)
             if checked == '`':
                 modified_plan = modified_plan+'`'
-                print(modified_plan)
             if modified_plan:
                 self.plan_listbox.delete(index)
                 self.plan_listbox.insert(index, modified_plan)
@@ -88,7 +86,7 @@ class PlanningChart:
                     self.plan_listbox.delete(index)
                 self.update_progress()
         else:
-            messagebox.showwarning("경고", "계획을 선택하세요")
+            messagebox.showwarning("경고", "지울 계획을 선택하세요")
 
     def checked_or_no(self):
         selected_indices = self.plan_listbox.curselection()
@@ -105,10 +103,16 @@ class PlanningChart:
 
 
     def check_plan(self):
+        print(1)
         for index, checked in self.checked_or_no():
+            plan_text = self.plan_listbox.get(index)
             if checked == '`':
+                self.plan_listbox.delete(index)
+                self.plan_listbox.insert(index, plan_text[0:len(plan_text)-1])
                 self.plan_listbox.itemconfig(index, {'bg': 'white'})
             else:
+                self.plan_listbox.delete(index)
+                self.plan_listbox.insert(index, plan_text+'`')
                 self.plan_listbox.itemconfig(index, {'bg': 'light green'})
         self.update_progress()
 
@@ -124,7 +128,6 @@ class PlanningChart:
             file_path = os.path.join("목표", f"{self.goal}.txt")
             with open(file_path, 'w') as file:
                 for i in range(self.plan_listbox.size()):
-                    print(self.plan_listbox.get(i))
                     file.write(f"{self.plan_listbox.get(i)}\n") 
             messagebox.showinfo("저장 완료", "계획이 성공적으로 저장되었습니다")
 
@@ -142,4 +145,4 @@ class PlanningChart:
                 content = file.readlines()
                 print(content)
             for line in content:
-                self.plan_listbox.insert(tk.END, line.strip(" `"))
+                self.plan_listbox.insert(tk.END, line.strip("` "))
