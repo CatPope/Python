@@ -1,35 +1,37 @@
 import tkinter as tk
-from tkinter import filedialog
 
-class App:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("File Contents to Listbox")
+def delete_last_character():
+    selected_index = listbox.curselection()
+    if selected_index:
+        # Get the text of the selected item
+        current_text = listbox.get(selected_index)
 
-        self.listbox = tk.Listbox(root, width=50, height=10)
-        self.listbox.pack()
+        # Check if the text has at least one character
+        if current_text:
+            # Remove the last character
+            modified_text = current_text[:-1]
 
-        load_button = tk.Button(root, text="Load File", command=self.load_file)
-        load_button.pack()
+            # Delete the current item
+            listbox.delete(selected_index)
 
-    def load_file(self):
-        file_path = filedialog.askopenfilename(title="Select a file", filetypes=[("Text files", "*.txt")])
-        
-        if file_path:
-            try:
-                with open(file_path, 'r') as file:
-                    content = file.readlines()
-                
-                # Clear existing items in the listbox
-                self.listbox.delete(0, tk.END)
+            # Insert the modified text back to the listbox
+            listbox.insert(selected_index, modified_text)
 
-                # Insert lines from the file into the listbox
-                for line in content:
-                    self.listbox.insert(tk.END, line.strip())
-            except Exception as e:
-                tk.messagebox.showerror("Error", f"Error loading file: {str(e)}")
+# Create the main window
+root = tk.Tk()
 
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = App(root)
-    root.mainloop()
+# Create a Listbox
+listbox = tk.Listbox(root)
+listbox.pack()
+
+# Insert some items for demonstration
+listbox.insert(tk.END, "Item 1")
+listbox.insert(tk.END, "Item 2")
+listbox.insert(tk.END, "Item 3")
+
+# Create a button to delete the last character
+delete_button = tk.Button(root, text="Delete Last Character", command=delete_last_character)
+delete_button.pack()
+
+# Run the Tkinter main loop
+root.mainloop()

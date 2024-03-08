@@ -69,8 +69,8 @@ class PlanningChart:
         if len(checked_list) == 1:
             index, checked = checked_list[0]
             modified_plan = simpledialog.askstring("계획 수정", "수정된 계획을 입력하세요:", parent=self.master)
-            if checked == '$$':
-                modified_plan = modified_plan+'$$'
+            if checked == '`':
+                modified_plan = modified_plan+'`'
                 print(modified_plan)
             if modified_plan:
                 self.plan_listbox.delete(index)
@@ -96,7 +96,7 @@ class PlanningChart:
         if selected_indices:
             for index in reversed(selected_indices):
                 plan_text = self.plan_listbox.get(index)
-                checked = plan_text[-2]
+                checked = plan_text[-1]
                 checked_list.append((index, checked))
             return checked_list
         else:
@@ -106,7 +106,7 @@ class PlanningChart:
 
     def check_plan(self):
         for index, checked in self.checked_or_no():
-            if checked == '$$':
+            if checked == '`':
                 self.plan_listbox.itemconfig(index, {'bg': 'white'})
             else:
                 self.plan_listbox.itemconfig(index, {'bg': 'light green'})
@@ -122,11 +122,10 @@ class PlanningChart:
     def save_plans(self):
         if self.goal:
             file_path = os.path.join("목표", f"{self.goal}.txt")
-
             with open(file_path, 'w') as file:
                 for i in range(self.plan_listbox.size()):
-                    file.write(f"{self.plan_listbox.get(i)}\n")
-
+                    print(self.plan_listbox.get(i))
+                    file.write(f"{self.plan_listbox.get(i)}\n") 
             messagebox.showinfo("저장 완료", "계획이 성공적으로 저장되었습니다")
 
     def close_plans(self):
@@ -141,5 +140,6 @@ class PlanningChart:
         if file_path:
             with open(file_path, 'r') as file:
                 content = file.readlines()
+                print(content)
             for line in content:
-                self.plan_listbox.insert(tk.END, line.strip(" $$"))
+                self.plan_listbox.insert(tk.END, line.strip(" `"))

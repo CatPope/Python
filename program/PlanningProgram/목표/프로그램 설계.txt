@@ -12,6 +12,23 @@ chacked_plan : 완료 버튼을 누르면 줄 끝에 `기호 1개 추가/삭제, `기호가 있으면 초
 modify_plan : 끝에있는 `기호 1개 빼고 수정.
 
 
+체크 버튼을 누르면 
+1. listbox.curselection()을 받아와서 끝에 `이 있으면 `을 삭제한다.
+2. `의 유무에 따라 색이 바뀐다.
+
+PlanningChart's fungtions:
+
+add_plan
+modify_plan
+delete_plan
+checked_or_no
+check_plan
+update_progress
+save_plans
+close_plans
+load_file
+
+
 
 
 
