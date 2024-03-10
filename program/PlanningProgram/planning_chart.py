@@ -12,44 +12,47 @@ class PlanningChart:
 
         self.master = master
         self.master.title(goal)
-
+        self.master.geometry("210x600")
         self.master.protocol("WM_DELETE_WINDOW", self.close_plans)
-        
+
+
         self.goal_label = tk.Label(master, text=goal)
-        self.goal_label.pack()
+        self.goal_label.pack(side="top", fill="x", padx=10, pady=10)
 
         self.progress_label = tk.Label(master, text="진행도: 0% (0/0)")
-        self.progress_label.pack()
+        self.progress_label.pack(side="top", expand=False)
 
         self.progress_bar = ttk.Progressbar(master, orient="horizontal", length=120)
-        self.progress_bar.pack()
+        self.progress_bar.pack(side="top", fill="x", padx=20)
 
         self.plan_entry = tk.Entry(master)
-        self.plan_entry.pack()
+        self.plan_entry.pack(side="top", fill="x", padx=15)
 
         self.add_plan_button = tk.Button(master, text="추가", command=self.add_plan)
-        self.add_plan_button.pack()
+        self.add_plan_button.pack(side="left", fill="x", pady=10, ipady=5)
 
         self.delete_plan_button = tk.Button(master, text="삭제", command=self.delete_plan)
-        self.delete_plan_button.pack()
+        self.delete_plan_button.pack(side="left", fill="x", pady=10, ipady=5)
 
         self.modify_plan_button = tk.Button(master, text="수정", command=self.modify_plan)
-        self.modify_plan_button.pack()
+        self.modify_plan_button.pack(side="left", fill="x", pady=10, ipady=5)
 
         self.check_plan_button = tk.Button(master, text="완료", command=self.check_plan)
-        self.check_plan_button.pack()
-
-        self.plans_scrollbar = tk.Scrollbar(master, orient=tk.VERTICAL)
-        
-        self.plan_listbox = tk.Listbox(master, yscrollcommand=self.plans_scrollbar.set)
-        self.plan_listbox.config(selectmode="extended")
-        self.plan_listbox.pack()
-
-        self.plans_scrollbar.config(command=self.plan_listbox.yview)
-        self.plans_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.check_plan_button.pack(side="left", fill="x", pady=10, ipady=5)
 
         self.save_button = tk.Button(master, text="저장 (Ctrl + S)", command=self.save_plans)
-        self.save_button.pack()
+        self.save_button.pack(side="bottom")
+
+        self.listbox_frame = tk.Frame(master)
+        self.listbox_frame.pack(side="bottom")
+
+        self.plans_scrollbar = tk.Scrollbar(self.listbox_frame, orient=tk.VERTICAL)
+        self.plans_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        self.plan_listbox = tk.Listbox(self.listbox_frame, yscrollcommand=self.plans_scrollbar.set)
+        self.plan_listbox.config(selectmode="extended")
+        self.plan_listbox.pack()
+        self.plans_scrollbar.config(command=self.plan_listbox.yview)
 
         self.master.bind("<Control-s>", lambda event: self.save_plans())
         self.master.bind("<Control-w>", lambda event: self.close_plans)

@@ -9,6 +9,7 @@ class LoadPlans:
         self.master = master
         self.master.title("반드시 성공시키자!")
         self.master.geometry("210x90")
+        self.master.resizable(False, False)
 
         self.goals_list = self.load_goals()
         self.opened_plans = []
