@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox, font
 import os
 from planning_chart import PlanningChart
 
@@ -8,59 +8,54 @@ class LoadPlans:
     def __init__(self, master):
         self.master = master
         self.master.title("반드시 성공시키자!")
+        self.master.geometry("210x90")
 
         self.goals_list = self.load_goals()
-
         self.opened_plans = []
 
-        self.new_goal_entry = tk.Entry(master)
-        self.new_goal_entry.pack()
-
-        self.new_goal_button = tk.Button(master, text="생성", command=self.make_goal)
-        self.new_goal_button.pack()
-
-        self.goals_combobox = ttk.Combobox(master, values=self.goals_list)
+        self.goals_combobox = ttk.Combobox(master, values=self.goals_list, width=23)
         self.goals_combobox.set("목표 선택")
-        self.goals_combobox.pack()
+        self.goals_combobox.pack(side="top", pady=10)
 
-        self.select_button = tk.Button(master, text="불러오기", command=self.select_goal)
-        self.select_button.pack()
+        self.new_goal_button = tk.Button(master, text="새로시작", command=self.entered_goal)
+        self.new_goal_button.pack(side="left", expand=True, ipady=5)
 
-        self.delete_file_button = tk.Button(master, text="파일 삭제", command=self.delete_selected_file)
-        self.delete_file_button.pack()
+        self.select_button = tk.Button(master, text="불러오기", command=self.entered_goal)
+        self.select_button.pack(side="left", ipady=5)
+
+        self.delete_file_button = tk.Button(master, text="파일삭제", command=self.delete_selected_file)
+        self.delete_file_button.pack(side="left", expand=True, ipady=5)
 
         self.master.bind("<FocusIn>", lambda event: self.goals_combobox.config(values=self.goals_list))
-        self.new_goal_entry.bind("<Return>", self.make_goal)
-        self.goals_combobox.bind("<Return>", self.select_goal)
+        self.goals_combobox.bind("<FocusIn>", lambda event: self.on_combobox_selected())
+        self.goals_combobox.bind("<Return>", self.entered_goal)
 
     def goals_path(self):
         current_dir = os.path.dirname(os.path.abspath(__file__))
         goals_dir = os.path.join(current_dir, '목표')
         return goals_dir
 
-    def make_goal(self, event=None):
-        new_goal_value = self.new_goal_entry.get()
-        file_name = new_goal_value + ".txt"
-        if file_name.split() == [".txt"]:
-            
-            messagebox.showwarning("경고", "목표를 입력해 주세요")
-        elif new_goal_value in self.goals_list:
-            messagebox.showwarning("경고", "존제하는 목표입니다")
-        else:
-            save_path = os.path.join(self.goals_path(), file_name)
-            with open(save_path, 'w') as file:
-                pass
-            self.update_combobox()
-            self.open_plans(new_goal_value)
-
-    def select_goal(self, event=None):
+    def entered_goal(self, event=None):
         selected_goal_value = self.goals_combobox.get()
         if selected_goal_value == "목표 선택":
-            messagebox.showwarning("경고", "목표를 선택하세요")
-        elif selected_goal_value not in self.goals_list:
-            messagebox.showwarning("경고", "존재하지 않는 목표입니다.")
-        else:
+            messagebox.showwarning("경고", "목표를 선택하거나 입력하세요")
+        elif selected_goal_value in self.goals_list:
             self.open_plans(selected_goal_value)
+        else:
+            self.make_goal(selected_goal_value)
+
+    def make_goal(self, goal_value, event=None):
+        file_name = goal_value + ".txt"
+        save_path = os.path.join(self.goals_path(), file_name)
+        with open(save_path, 'w') as file:
+            pass
+        self.update_combobox()
+        self.open_plans(goal_value)
+
+    def on_combobox_selected(self, event=None):
+        current_value = self.goals_combobox.get()
+        if current_value == "목표 선택":
+            self.goals_combobox.set("")
 
     def load_goals(self):
         load_path = self.goals_path()
@@ -73,7 +68,7 @@ class LoadPlans:
             goals_list.append(sp_file[0])
         return goals_list
 
-    def update_combobox(self, event=None):
+    def update_combobox(self):
         self.goals_list = self.load_goals()
         self.goals_combobox.config(values=self.goals_list)
 

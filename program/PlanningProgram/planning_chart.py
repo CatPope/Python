@@ -6,6 +6,7 @@ class PlanningChart:
     def __init__(self, master, goal, opened_plans):
 
         self.goal = goal
+        self.file_path = os.path.join("목표", self.goal+".txt")
         self.opened_plans = opened_plans
         self.finished_plans = []
 
@@ -26,22 +27,26 @@ class PlanningChart:
         self.plan_entry = tk.Entry(master)
         self.plan_entry.pack()
 
-        self.add_plan_button = tk.Button(master, text="계획 추가", command=self.add_plan)
+        self.add_plan_button = tk.Button(master, text="추가", command=self.add_plan)
         self.add_plan_button.pack()
-
-        self.modify_plan_button = tk.Button(master, text="계획 수정", command=self.modify_plan)
-        self.modify_plan_button.pack()
 
         self.delete_plan_button = tk.Button(master, text="삭제", command=self.delete_plan)
         self.delete_plan_button.pack()
 
+        self.modify_plan_button = tk.Button(master, text="수정", command=self.modify_plan)
+        self.modify_plan_button.pack()
+
         self.check_plan_button = tk.Button(master, text="완료", command=self.check_plan)
         self.check_plan_button.pack()
 
-        self.plan_listbox = tk.Listbox(master)
+        self.plans_scrollbar = tk.Scrollbar(master, orient=tk.VERTICAL)
+        
+        self.plan_listbox = tk.Listbox(master, yscrollcommand=self.plans_scrollbar.set)
         self.plan_listbox.config(selectmode="extended")
-        self.load_file()
         self.plan_listbox.pack()
+
+        self.plans_scrollbar.config(command=self.plan_listbox.yview)
+        self.plans_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
         self.save_button = tk.Button(master, text="저장 (Ctrl + S)", command=self.save_plans)
         self.save_button.pack()
@@ -51,8 +56,9 @@ class PlanningChart:
         self.master.bind("<Delete>", lambda event: self.delete_plan())
         self.plan_entry.bind("<Return>", self.add_plan)
 
-        
+        self.load_file()
         self.update_progress()
+
 
     def add_plan(self, event=None):
         plan = self.plan_entry.get()
@@ -64,12 +70,12 @@ class PlanningChart:
             messagebox.showwarning("경고", "계획을 입력하세요")
 
     def modify_plan(self):
-        checked_list = self.checked_or_no()
-        if len(checked_list) == 1:
+        selected_indices = self.plan_listbox.curselection()
+        if len(selected_indices) == 1:
             index, checked = checked_list[0]
             modified_plan = simpledialog.askstring("계획 수정", "수정된 계획을 입력하세요:", parent=self.master)
-            if checked == '`':
-                modified_plan = modified_plan+'`'
+            if checked == ' ':
+                modified_plan = modified_plan+' '
             if modified_plan:
                 self.plan_listbox.delete(index)
                 self.plan_listbox.insert(index, modified_plan)
@@ -86,34 +92,39 @@ class PlanningChart:
                     self.plan_listbox.delete(index)
                 self.update_progress()
         else:
-            messagebox.showwarning("경고", "지울 계획을 선택하세요")
+            messagebox.showwarning("경고", "계획을 선택하세요")
 
-    def checked_or_no(self):
-        selected_indices = self.plan_listbox.curselection()
+    def plan_color(self, selected_indices):
         checked_list = []
         if selected_indices:
             for index in reversed(selected_indices):
                 plan_text = self.plan_listbox.get(index)
                 checked = plan_text[-1]
                 checked_list.append((index, checked))
+                if checked == ' ':
+                    self.plan_listbox.itemconfig(index, {'bg': 'light green'})
+                else:
+                    self.plan_listbox.itemconfig(index, {'bg': 'white'})
+            self.update_progress()
             return checked_list
+        elif selected_indices == False:
+            pass
         else:
             messagebox.showwarning("경고", "계획을 선택하세요")
             return []
 
-
     def check_plan(self):
-        print(1)
-        for index, checked in self.checked_or_no():
+        selected_indices = self.plan_listbox.curselection()
+        chacked_list = self.plan_color(selected_indices)
+        for index, checked in chacked_list:
             plan_text = self.plan_listbox.get(index)
-            if checked == '`':
+            if checked == ' ':
                 self.plan_listbox.delete(index)
                 self.plan_listbox.insert(index, plan_text[0:len(plan_text)-1])
-                self.plan_listbox.itemconfig(index, {'bg': 'white'})
             else:
                 self.plan_listbox.delete(index)
-                self.plan_listbox.insert(index, plan_text+'`')
-                self.plan_listbox.itemconfig(index, {'bg': 'light green'})
+                self.plan_listbox.insert(index, plan_text+' ')
+        self.plan_color(selected_indices)
         self.update_progress()
 
     def update_progress(self):
@@ -124,25 +135,27 @@ class PlanningChart:
         self.progress_label.config(text=f"진행도: {percentage:.2f}% ({completed_plans}/{total_plans})")
 
     def save_plans(self):
-        if self.goal:
-            file_path = os.path.join("목표", f"{self.goal}.txt")
-            with open(file_path, 'w') as file:
-                for i in range(self.plan_listbox.size()):
-                    file.write(f"{self.plan_listbox.get(i)}\n") 
-            messagebox.showinfo("저장 완료", "계획이 성공적으로 저장되었습니다")
+        with open(self.file_path, 'w') as file:
+            for plan in self.plan_listbox.get(0, tk.END):
+                file.write(plan +"\n")
+        messagebox.showinfo("저장 완료", "계획이 성공적으로 저장되었습니다")
 
     def close_plans(self):
-        confirm = messagebox.askokcancel("저장", "저장 하시겠습니까?")
-        if confirm:
+        confirm = messagebox.askquestion("저장", "저장 하시겠습니까?")
+        if confirm == "yes":
             self.save_plans()
+            self.opened_plans.remove(self.goal)
+            self.master.destroy()
+        else:
             self.opened_plans.remove(self.goal)
             self.master.destroy()
 
     def load_file(self):
-        file_path = os.path.join("목표", f"{self.goal}.txt")
-        if file_path:
-            with open(file_path, 'r') as file:
+        if self.file_path:
+            with open(self.file_path, 'r') as file:
                 content = file.readlines()
-                print(content)
             for line in content:
-                self.plan_listbox.insert(tk.END, line.strip("` "))
+                self.plan_listbox.insert(tk.END, line.strip("\n"))
+            all_index = self.plan_listbox.size()
+            index_list = list(range(all_index)) if all_index !=0 else False
+            color = self.plan_color(index_list)
