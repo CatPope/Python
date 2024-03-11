@@ -1,26 +1,15 @@
 import tkinter as tk
 
-class PlanningChart:
-    def __init__(self, master):
-        self.master = master
-        self.master.title("Planning Chart")
+root = tk.Tk()
 
-        self.plan_listbox = tk.Listbox(self.master, selectmode="extended")
-        self.plan_listbox.pack(fill=tk.BOTH, expand=True)
+frame = tk.Frame(root)
+frame.pack(expand=True, fill="both")  # Frame이 부모 위젯의 크기에 따라 확장되도록 설정
 
-        self.plans_scrollbar = tk.Scrollbar(self.master)
-        self.plans_scrollbar.config(command=self.plan_listbox.yview)
-        self.plans_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+listbox = tk.Listbox(frame)
+listbox.pack(expand=True, fill="both")  # Listbox가 Frame 내에서 가로와 세로로 채워지도록 설정
 
-        # 연결
-        self.plan_listbox.config(yscrollcommand=self.plans_scrollbar.set)
+# Listbox에 아이템 추가
+for i in range(10):
+    listbox.insert(tk.END, f"Item {i}")
 
-        # 예시로 몇 가지 아이템 추가
-        for i in range(1, 21):
-            self.plan_listbox.insert(tk.END, f"Plan {i}")
-
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = PlanningChart(root)
-    root.mainloop()
-
+root.mainloop()

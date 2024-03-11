@@ -15,16 +15,12 @@ class LoadPlans:
         self.opened_plans = []
 
         self.goals_combobox = ttk.Combobox(master, values=self.goals_list, width=23)
+        self.select_button = tk.Button(master, text="파일 열기", command=self.entered_goal)
+        self.delete_file_button = tk.Button(master, text="파일 삭제", command=self.delete_selected_file)
+
         self.goals_combobox.set("목표 선택")
         self.goals_combobox.pack(side="top", pady=10)
-
-        self.new_goal_button = tk.Button(master, text="새로시작", command=self.entered_goal)
-        self.new_goal_button.pack(side="left", expand=True, ipady=5)
-
-        self.select_button = tk.Button(master, text="불러오기", command=self.entered_goal)
-        self.select_button.pack(side="left", ipady=5)
-
-        self.delete_file_button = tk.Button(master, text="파일삭제", command=self.delete_selected_file)
+        self.select_button.pack(side="left", expand=True, ipady=5)
         self.delete_file_button.pack(side="left", expand=True, ipady=5)
 
         self.master.bind("<FocusIn>", lambda event: self.goals_combobox.config(values=self.goals_list))
@@ -38,7 +34,8 @@ class LoadPlans:
 
     def entered_goal(self, event=None):
         selected_goal_value = self.goals_combobox.get()
-        if selected_goal_value == "목표 선택":
+        no_selected = selected_goal_value=="목표 선택" or selected_goal_value==""
+        if no_selected:
             messagebox.showwarning("경고", "목표를 선택하거나 입력하세요")
         elif selected_goal_value in self.goals_list:
             self.open_plans(selected_goal_value)
