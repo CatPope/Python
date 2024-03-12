@@ -71,12 +71,11 @@ class PlanningChart:
         selected_indices = self.plan_listbox.curselection()
         if len(selected_indices) == 1:
             checked_list = self.plan_color(selected_indices)
-            print(checked_list)
             index, checked = checked_list[0]
             modified_plan = simpledialog.askstring("계획 수정", "수정된 계획을 입력하세요", parent=self.master)
             if modified_plan:
                 if checked != ' ':
-                    modified_plan = modified_plan+' '
+                    modified_plan = modified_plan+' ' 
                 self.plan_listbox.delete(index)
                 self.plan_listbox.insert(index, modified_plan)
                 self.check_plan(selected_indices)
