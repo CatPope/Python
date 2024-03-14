@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import simpledialog, ttk, messagebox
+from tkinter import simpledialog, ttk, messagebox, font
 import os
 
 class PlanningChart:
@@ -9,13 +9,14 @@ class PlanningChart:
         self.file_path = os.path.join("목표", self.goal+".txt")
         self.opened_plans = opened_plans
         self.finished_plans = []
+        self.customfont = font.Font(family="Cheer up", size=20, weight="bold")
 
         self.master = master
         self.master.title(goal)
         self.master.geometry("210x470")
         self.master.protocol("WM_DELETE_WINDOW", self.close_plans)
 
-        self.goal_label = tk.Label(master, text=goal)
+        self.goal_label = tk.Label(master, text=goal, font=self.customfont)
         self.progress_label = tk.Label(master, text="진행도: 0% (0/0)")
         self.progress_bar = ttk.Progressbar(master, orient="horizontal", length=120)
         self.plan_entry = tk.Entry(master)

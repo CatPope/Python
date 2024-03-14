@@ -7,7 +7,7 @@ from planning_chart import PlanningChart
 class LoadPlans:
     def __init__(self, master):
         self.master = master
-        self.master.title("반드시 성공시키자!")
+        self.master.title("관리자")
         self.master.geometry("210x90")
         self.master.resizable(False, False)
 
