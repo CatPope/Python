@@ -8,7 +8,6 @@ class PlanningChart:
         self.goal = goal
         self.file_path = os.path.join("목표", self.goal+".txt")
         self.opened_plans = opened_plans
-        self.finished_plans = []
         self.customfont = font.Font(family="Cheer up", size=20, weight="bold")
 
         self.master = master
@@ -97,7 +96,7 @@ class PlanningChart:
         else:
             messagebox.showwarning("경고", "계획을 선택하세요")
 
-    def plan_color(self, selected_indices): #두번 작동함
+    def plan_color(self, selected_indices):
         checked_list = []
         if selected_indices:
             for index in reversed(selected_indices):
@@ -129,6 +128,7 @@ class PlanningChart:
                 self.plan_listbox.delete(index)
                 self.plan_listbox.insert(index, plan_text+' ')
         self.plan_color(selected_indices)
+        self.finished_plan()
         self.update_progress()
 
     def update_progress(self):
@@ -137,6 +137,20 @@ class PlanningChart:
         percentage = (completed_plans / total_plans) * 100 if total_plans > 0 else 0
         self.progress_bar["value"] = percentage
         self.progress_label.config(text=f"진행도: {percentage:.2f}% ({completed_plans}/{total_plans})")
+
+    def finished_plan(self):
+        colors = self.chack_all()
+        for color in colors:
+            if color[1] != ' ':
+                return False
+        window_award = tk.Toplevel(self.master)
+        app_award = Award(window_award, self.goal)
+
+    def chack_all(self):
+        all_index = self.plan_listbox.size()
+        index_list = list(range(all_index)) if all_index !=0 else False
+        color = self.plan_color(index_list)
+        return color
 
     def save_plans(self):
         with open(self.file_path, 'w') as file:
@@ -162,6 +176,4 @@ class PlanningChart:
                 content = file.readlines()
             for line in content:
                 self.plan_listbox.insert(tk.END, line.strip("\n"))
-            all_index = self.plan_listbox.size()
-            index_list = list(range(all_index)) if all_index !=0 else False
-            color = self.plan_color(index_list)
+            color = self.chack_all()
