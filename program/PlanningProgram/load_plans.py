@@ -8,7 +8,7 @@ class LoadPlans:
     def __init__(self, master):
         self.master = master
         self.master.title("관리자")
-        self.master.geometry("210x90")
+        self.master.geometry("210x100")
         self.master.resizable(False, False)
 
         self.goals_list = self.load_goals()
@@ -19,9 +19,9 @@ class LoadPlans:
         self.delete_file_button = tk.Button(master, text="파일 삭제", command=self.delete_selected_file)
 
         self.goals_combobox.set("목표 선택")
-        self.goals_combobox.pack(side="top", pady=10)
-        self.select_button.pack(side="left", expand=True, ipady=5)
-        self.delete_file_button.pack(side="left", expand=True, ipady=5)
+        self.goals_combobox.pack(side="top", pady=8, ipady=5)
+        self.select_button.pack(side="left", expand=True, padx=10, ipady=5, ipadx=10)
+        self.delete_file_button.pack(side="left", expand=True, padx=10, ipady=5, ipadx=10)
 
         self.master.bind("<FocusIn>", lambda event: self.goals_combobox.config(values=self.goals_list))
         self.goals_combobox.bind("<FocusIn>", lambda event: self.on_combobox_selected())
@@ -94,7 +94,7 @@ class LoadPlans:
         else:
             self.opened_plans.append(goal)
             window_planning = tk.Toplevel(self.master)
-            root.iconify() #화면 최소화
+            root.iconify()
             app_planning = PlanningChart(window_planning, goal, self.opened_plans)
 
 if __name__ == "__main__":

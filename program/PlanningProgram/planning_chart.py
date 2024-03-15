@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import simpledialog, ttk, messagebox, font
 import os
+from gift import Gift
 
 class PlanningChart:
     def __init__(self, master, goal, opened_plans):
@@ -143,8 +144,8 @@ class PlanningChart:
         for color in colors:
             if color[1] != ' ':
                 return False
-        window_award = tk.Toplevel(self.master)
-        app_award = Award(window_award, self.goal)
+        window_gift = tk.Toplevel(self.master)
+        app_gift = Gift(window_gift)
 
     def chack_all(self):
         all_index = self.plan_listbox.size()
@@ -175,5 +176,5 @@ class PlanningChart:
             with open(self.file_path, 'r') as file:
                 content = file.readlines()
             for line in content:
-                self.plan_listbox.insert(tk.END, line.strip("\n"))
+                self.plan_listbox.insert(tk.END, line.rstrip("\n"))
             color = self.chack_all()
