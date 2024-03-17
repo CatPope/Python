@@ -7,7 +7,7 @@ class PlanningChart:
     def __init__(self, master, goal, opened_plans):
 
         self.goal = goal
-        self.file_path = os.path.join("목표", self.goal+".txt")
+        self.file_path = os.path.join("목표", self.goal+".json")
         self.opened_plans = opened_plans
         self.customfont = font.Font(family="Cheer up", size=20, weight="bold")
 
@@ -145,7 +145,7 @@ class PlanningChart:
             if color[1] != ' ':
                 return False
         window_gift = tk.Toplevel(self.master)
-        app_gift = Gift(window_gift)
+        app_gift = Gift(window_gift, self.goal)
 
     def chack_all(self):
         all_index = self.plan_listbox.size()
@@ -154,27 +154,33 @@ class PlanningChart:
         return color
 
     def save_plans(self):
-        with open(self.file_path, 'w') as file:
-            for plan in self.plan_listbox.get(0, tk.END):
-                file.write(plan +"\n")
+        try:
+            with open(self.file_path, 'w', encoding="utf-8") as file:
+                for plan in self.plan_listbox.get(0, tk.END):
+                    file.write(plan +"\n")
+        except Exception as e:
+            messagebox.showerror("Error", f"파일을 저장하는중 오류가 발생했습니다: {e}")
 
     def close_plans(self):
-        confirm = messagebox.askquestion("저장", "저장 하시겠습니까?")
-        if confirm == "yes":
+        confirm = messagebox.askyesnocancel("저장", "저장 하시겠습니까?")
+        if confirm == True:
             try:
                 self.save_plans()
                 self.opened_plans.remove(self.goal)
                 self.master.destroy()
             except:
                 messagebox.showerror("오류", f"파일 저장중 오류가 발생했습니다: {e}")
-        else:
+        elif confirm == False:
             self.opened_plans.remove(self.goal)
             self.master.destroy()
 
     def load_file(self):
-        if self.file_path:
-            with open(self.file_path, 'r') as file:
-                content = file.readlines()
-            for line in content:
-                self.plan_listbox.insert(tk.END, line.rstrip("\n"))
-            color = self.chack_all()
+        try:
+            if self.file_path:
+                with open(self.file_path, 'r', encoding="utf-8") as file:
+                    content = file.readlines()
+                for line in content:
+                    self.plan_listbox.insert(tk.END, line.rstrip("\n"))
+                color = self.chack_all()
+        except Exception as e:
+            messagebox.showerror("Error", f"파일을 불러오는중 오류가 발생했습니다: {e}")

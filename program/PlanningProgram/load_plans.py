@@ -94,7 +94,6 @@ class LoadPlans:
         else:
             self.opened_plans.append(goal)
             window_planning = tk.Toplevel(self.master)
-            root.iconify()
             app_planning = PlanningChart(window_planning, goal, self.opened_plans)
 
 if __name__ == "__main__":
