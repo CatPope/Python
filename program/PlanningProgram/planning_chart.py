@@ -92,7 +92,7 @@ class PlanningChart:
                     for index in reversed(selected_indices):
                         self.plan_listbox.delete(index)
                     self.update_progress()
-                except:
+                except Exception as e:
                     messagebox.showerror("오류", f"파일 삭제중 오류가 발생했습니다: {e}")
         else:
             messagebox.showwarning("경고", "계획을 선택하세요")
@@ -168,7 +168,7 @@ class PlanningChart:
                 self.save_plans()
                 self.opened_plans.remove(self.goal)
                 self.master.destroy()
-            except:
+            except Exception as e:
                 messagebox.showerror("오류", f"파일 저장중 오류가 발생했습니다: {e}")
         elif confirm == False:
             self.opened_plans.remove(self.goal)
