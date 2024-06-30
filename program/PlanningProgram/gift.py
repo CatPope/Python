@@ -48,42 +48,42 @@ class Gift:
         elif s_can_select:
             self.show_result(selected_gift)
         else:
-            messagebox.showwarning("경고", "선물을 추가하세요")
+            messagebox.showwarning("경고", "선물을 추가하세요", icon='warning')
 
     def add_gift(self, event=None):
         selected_gift = self.gifts_combobox.get()
         if selected_gift == "선택 & 입력" or selected_gift == "랜덤":
-            messagebox.showwarning("경고", "추가 할 수 없는 이름입니다")
+            messagebox.showwarning("경고", "추가 할 수 없는 선물입니다", icon='warning')
         elif selected_gift.rstrip() == '':
-            messagebox.showwarning("경고", "선물을 입력해 주세요")
+            messagebox.showwarning("경고", "선물을 입력해 주세요", icon='warning')
         elif selected_gift in self.gifts_list:
-            messagebox.showwarning("경고", "이미 존재하는 선물입니다")
+            messagebox.showwarning("경고", "이미 존재하는 선물입니다", icon='warning')
         else:
             with open("선물.txt", 'a', encoding="utf-8") as file:
                 if "랜덤" not in self.gifts_list:
                     file.write("랜덤\n")
                 file.write(selected_gift + "\n")
-            messagebox.showinfo("완료", "추가되었습니다")
+            messagebox.showinfo("완료", "추가되었습니다", icon='info')
         self.load_file()
 
     def delete_gift(self, event=None):
         selected_gift = self.gifts_combobox.get()
         if selected_gift not in self.gifts_list:
-            messagebox.showwarning("경고", "존재하지 않는 선물입니다")
+            messagebox.showwarning("경고", "존재하지 않는 선물입니다", icon='warning')
         elif selected_gift == "랜덤":
-            messagebox.showwarning("경고", "삭제 할수 없는 선물입니다")
+            messagebox.showwarning("경고", "삭제 할수 없는 선물입니다", icon='warning')
         else:
-            confirm = messagebox.askokcancel("삭제", "정말로 삭제 하시겠습니까?", default="cancel")
+            confirm = messagebox.askokcancel("삭제", "정말로 삭제 하시겠습니까?", icon='warning', default="cancel")
             if confirm:
                 self.gifts_list.remove(selected_gift)
                 with open("선물.txt", 'w+', encoding="utf-8") as file:
                     for gift in self.gifts_list:
                         file.write(gift + "\n")
                 self.load_file()
-                messagebox.showinfo("완료", "삭제되었습니다")
+                messagebox.showinfo("완료", "삭제되었습니다", icon='info')
 
     def show_result(self, result):
-        confirm = messagebox.askyesno("선물이에요!", "당신에게 "+ result +"을(를) 선물해 주세요!")
+        confirm = messagebox.askyesno("선물이에요!", "당신에게 "+ result +"을(를) 선물해 주세요!", icon='info')
         if confirm:
             self.completed_file(result)
 
@@ -94,7 +94,7 @@ class Gift:
                 self.gifts_list = [gift.rstrip("\n") for gift in self.gifts_list]
             self.gifts_combobox.config(values=self.gifts_list)
         except Exception as e:
-            messagebox.showerror("Error", f"An error occurred: {e}")
+            messagebox.showerror("Error", f"An error occurred: {e}", icon='error', default='error')
 
     def close_window(self):
         self.master.grab_release()
@@ -148,7 +148,7 @@ class Record:
     def delete_listbox(self):
         selected_index = self.records_listbox.curselection()
         if selected_index:
-            confirm = messagebox.askokcancel("삭제", "정말로 삭제하시겠습니까?")
+            confirm = messagebox.askokcancel("삭제", "정말로 삭제하시겠습니까?", icon='warning')
             if confirm:
                 for index in reversed(selected_index):
                     del self.records_list[index]
@@ -157,22 +157,26 @@ class Record:
                     for record in self.records_list:
                         file.write(record)
                 self.load_file()
-                messagebox.showinfo("완료", "삭제되었습니다")
+                messagebox.showinfo("완료", "삭제되었습니다", icon='info')
 
     def load_file(self):
         try:
-            with open("성공기록.txt", "w", encoding="utf-8") as file:
-                pass
-            with open("성공기록.txt", "a+", encoding="utf-8") as file:
-                file.seek(0)
+            with open("성공기록.txt", "r", encoding="utf-8") as file:
                 self.records_list = file.readlines()
+                self.records_list = [record.rstrip("\n") for record in self.records_list]
+                self.records_listbox.delete(0, tk.END)
                 if self.records_list:
                     for text in self.records_list:
-                        self.records_listbox.insert(tk.END, text.rstrip('\n'))
+                        self.records_listbox.insert(tk.END, text)
                 else:
                     self.records_listbox.insert(tk.END, "선물을 선택해 보세요!")
+        except FileNotFoundError:
+            with open("성공기록.txt", "w", encoding="utf-8") as file:
+                pass
+            self.records_listbox.insert(tk.END, "선물을 선택해 보세요!")
         except Exception as e:
-            messagebox.showerror("Error", f"An error occurred: {e}")
+            messagebox.showerror("Error", f"An error occurred: {e}", icon='error', default='error')
+
 
     def close_window(self):
         self.master.grab_release()

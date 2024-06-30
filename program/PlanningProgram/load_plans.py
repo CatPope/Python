@@ -10,6 +10,7 @@ class LoadPlans:
         self.master.title("관리자")
         self.master.geometry("210x100")
         self.master.resizable(False, False)
+        self.master.protocol("WM_DELETE_WINDOW", self.close_master)
 
         self.goals_list = self.load_goals()
         self.opened_plans = []
@@ -36,19 +37,22 @@ class LoadPlans:
         selected_goal_value = self.goals_combobox.get()
         no_selected = selected_goal_value=="목표 선택" or selected_goal_value==""
         if no_selected:
-            messagebox.showwarning("경고", "목표를 선택하거나 입력하세요")
+            messagebox.showwarning("경고", "목표를 선택하거나 입력하세요", icon='warning')
         elif selected_goal_value in self.goals_list:
             self.open_plans(selected_goal_value)
         else:
             self.make_goal(selected_goal_value)
 
     def make_goal(self, goal_value, event=None):
-        file_name = goal_value + ".txt"
-        save_path = os.path.join(self.goals_path(), file_name)
-        with open(save_path, 'w') as file:
-            pass
-        self.update_combobox()
-        self.open_plans(goal_value)
+        if goal_value.strip():
+            file_name = goal_value + ".txt"
+            save_path = os.path.join(self.goals_path(), file_name)
+            with open(save_path, 'w') as file:
+                pass
+            self.update_combobox()
+            self.open_plans(goal_value)
+        else:
+            messagebox.showwarning("경고", "목를 입력하세요", icon='warning')        
 
     def on_combobox_selected(self, event=None):
         current_value = self.goals_combobox.get()
@@ -73,28 +77,36 @@ class LoadPlans:
     def delete_selected_file(self):
         selected_goal_value = self.goals_combobox.get()
         if selected_goal_value == "목표 선택":
-            messagebox.showwarning("경고", "목표를 선택하세요")
+            messagebox.showwarning("경고", "목표를 선택하세요", icon='warning')
         else:
             try:
-                confirm = messagebox.askokcancel("파일 삭제", "정말로 삭제하시겠습니까?", default="cancel")
+                confirm = messagebox.askokcancel("파일 삭제", "정말로 삭제하시겠습니까?", icon='warning', default="cancel")
                 if confirm:
                     file_path = os.path.join(self.goals_path(), f"{selected_goal_value}.txt")
                     if os.path.exists(file_path):
                         os.remove(file_path)
-                        messagebox.showinfo("파일 삭제 완료", "파일이 성공적으로 삭제되었습니다")
+                        messagebox.showinfo("파일 삭제 완료", "파일이 성공적으로 삭제되었습니다", icon='info')
                         self.update_combobox()
                     else:
-                        messagebox.showwarning("경고", "삭제할 파일이 존재하지 않습니다")
+                        messagebox.showwarning("경고", "삭제할 파일이 존재하지 않습니다", icon='warning')
             except Exception as e:
-                messagebox.showerror("오류", f"파일 삭제 중 오류가 발생했습니다: {e}")
+                messagebox.showerror("오류", f"파일 삭제 중 오류가 발생했습니다: {e}", icon='error', default='error')
 
     def open_plans(self, goal):
         if goal in self.opened_plans:
-            messagebox.showwarning("경고", "이미 열려있는 창입니다")
+            messagebox.showwarning("경고", "이미 열려있는 창입니다", icon='info')
         else:
             self.opened_plans.append(goal)
             window_planning = tk.Toplevel(self.master)
             app_planning = PlanningChart(window_planning, goal, self.opened_plans)
+
+    def close_master(self):
+        if self.opened_plans:
+            confirm = messagebox.askyesno("종료", "모든 화면이 종료됩니다. 종료 하시겠 습니까?", icon='warning', default="no")
+            if confirm:
+                root.quit()
+        else:
+            root.quit()
 
 if __name__ == "__main__":
     root = tk.Tk()
